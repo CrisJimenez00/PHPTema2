@@ -19,7 +19,12 @@
         }
     }
     $consulta = "select * from t_alumnos";
-    $resultado = mysqli_query($conexion, $consulta);
+    try {
+        $resultado = mysqli_query($conexion, $consulta);
+    } catch (Exception $e) {
+        die("Imposible realizar la consulta; Error nº:" . mysqli_connect_errno() . ":" . mysqli_error($conexion));
+    }
+
 
     ?>
 </body>
