@@ -16,19 +16,40 @@
 
         //Si no esta te pueden salir errores en la base de datos
         mysqli_set_charset($conexion, "utf8");
+
     } catch (Exception $e) {
+
         if (!$conexion) {
+
             //Con errno nos sale el número del error y con connect error te dice el nombre del fallo(te aparece el fallo en si)
-            die("Imposible conectar; Error nº:" . mysqli_connect_errno() . ":" . mysqli_connect_error());//El error es opcional en el examen, en el ejercicio es obligatorio
+            die("Imposible conectar; Error nº:" . mysqli_connect_errno() . ":" . mysqli_connect_error()); //El error es opcional en el examen, en el ejercicio es obligatorio
         }
     }
+
+    //Esta es la consulta que usaremos en este caso
     $consulta = "select * from t_alumnos";
+
     try {
         $resultado = mysqli_query($conexion, $consulta);
+        //Con esto creamos un array donde en cada posicion de guarda un dato de un elemento
+        $tupla = mysqli_fetch_row($resultado); //esto no se usa tanto
+        var_dump($tupla);
+        echo "<p><strong>Nombre: </strong> " . $tupla[1] . "</p>";
 
-        mysqli_free_result($resultado);
-        mysqli_close($conexion);
+        //El que se usa siempre y te devuelve un array asociativo
+        $tupla = mysqli_fetch_assoc($resultado);
+        var_dump($tupla);
+        echo "<p><strong>Nombre: </strong> " . $tupla["nombre"] . "</p>"; //Asi se piden los datos
 
+
+        $tupla = mysqli_fetch_array($resultado);
+        var_dump($tupla);
+        echo "<p><strong>Nombre: </strong> " . $tupla["nombre"] . "</p>";
+
+        mysqli_free_result($resultado);//Se debe de utilizar siempre, libera espacio
+        mysqli_close($conexion);//Siempre hay que cerrar 
+
+        //Para que salga bien el tipo de error es obligatorio poner esto
     } catch (Exception $e) {
         $mensaje = "Imposible realizar la consulta; Error nº:" . mysqli_connect_errno() . ":" . mysqli_error($conexion);
         mysqli_close($conexion);
