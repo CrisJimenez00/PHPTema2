@@ -16,7 +16,6 @@
 
         //Si no esta te pueden salir errores en la base de datos
         mysqli_set_charset($conexion, "utf8");
-
     } catch (Exception $e) {
 
         if (!$conexion) {
@@ -41,13 +40,25 @@
         var_dump($tupla);
         echo "<p><strong>Nombre: </strong> " . $tupla["nombre"] . "</p>"; //Asi se piden los datos
 
-
+        //te devuelve un array repetido, uno que es por indice y otro que es por el nombre de la columna
         $tupla = mysqli_fetch_array($resultado);
         var_dump($tupla);
         echo "<p><strong>Nombre: </strong> " . $tupla["nombre"] . "</p>";
 
-        mysqli_free_result($resultado);//Se debe de utilizar siempre, libera espacio
-        mysqli_close($conexion);//Siempre hay que cerrar 
+        //Para cuando veamos objetos(lo veremos en el tema 5)
+        $tupla = mysqli_fetch_object($resultado);
+        var_dump($tupla);
+        //Para acceder al objeto se pone ->
+        echo "<p><strong>Nombre: </strong> " . $tupla->nombre . "</p>";
+
+        //Para moverte entre tuplas
+        mysqli_data_seek($resultado, 1);
+
+        //para saber el numero de duplas obtenidas(nos sirve para for incluso y todo)
+        mysqli_num_rows($resultado);
+
+        mysqli_free_result($resultado); //Se debe de utilizar siempre, libera espacio
+        mysqli_close($conexion); //Siempre hay que cerrar 
 
         //Para que salga bien el tipo de error es obligatorio poner esto
     } catch (Exception $e) {
