@@ -21,8 +21,14 @@
     $consulta = "select * from t_alumnos";
     try {
         $resultado = mysqli_query($conexion, $consulta);
+
+        mysqli_free_result($resultado);
+        mysqli_close($conexion);
+
     } catch (Exception $e) {
-        die("Imposible realizar la consulta; Error nº:" . mysqli_connect_errno() . ":" . mysqli_error($conexion));
+        $mensaje = "Imposible realizar la consulta; Error nº:" . mysqli_connect_errno() . ":" . mysqli_error($conexion);
+        mysqli_close($conexion);
+        die($mensaje);
     }
 
 
