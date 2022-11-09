@@ -3,8 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+    </style>
     <title>Teoría acceso a BD</title>
 </head>
 
@@ -52,10 +63,25 @@
         echo "<p><strong>Nombre: </strong> " . $tupla->nombre . "</p>";
 
         //Para moverte entre tuplas
-        mysqli_data_seek($resultado, 1);
+        mysqli_data_seek($resultado, 0);
 
         //para saber el numero de duplas obtenidas(nos sirve para for incluso y todo)
         mysqli_num_rows($resultado);
+
+        echo "<table>";
+        echo "<tr><th>Codigo Alumno</th><th>Nombre</th><th>Telefono</th><th>Codigo Postal</th></tr>";
+
+        while ($tupla = mysqli_fetch_assoc($resultado)) {
+
+            echo "<tr>";
+            echo "<td>" . $tupla["cod_alu"] . "</td>";
+            echo "<td>" . $tupla["nombre"] . "</td>";
+            echo "<td>" . $tupla["telefono"] . "</td>";
+            echo "<td>" . $tupla["cp"] . "</td>";
+            echo "</tr>";
+        }
+
+        echo "</table>";
 
         mysqli_free_result($resultado); //Se debe de utilizar siempre, libera espacio
         mysqli_close($conexion); //Siempre hay que cerrar 
