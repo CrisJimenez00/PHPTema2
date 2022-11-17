@@ -1,12 +1,88 @@
 <?php
 require "src/bd_config.php";
+require "src/funciones.php";
+
+
+if (isset($_POST["usuario_nuevo"]))
+    $mensaje_accion = "Usuario registrado con éxito";
+
+
+if (isset($_POST["btnContinuarEditar"])) {
+
+    $error_nombre = $_POST["nombre"] == "";
+    $error_usuario = $_POST["usuario"] == "";
+    $error_email = $_POST["email"] == "" || !filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
+
+    if (!$error_usuario || !$error_email) {
+        try {
+            $conexion = mysqli_connect(SERVIDOR_BD, USUARIO_BD, CLAVE_BD, NOMBRE_BD);
+            mysqli_set_charset($conexion, "utf8");
+        } catch (Exception $e) {
+            die(pag_error("Práctica 1º CRUD", "Nuevo Usuario", "Imposible conectar. Error Nº " . mysqli_connect_errno() . " : " . mysqli_connect_error()));
+        }
+
+        if (!$error_usuario) {
+            $error_usuario = repetido($conexion, "usuarios", "usuario", $_POST["usuario"], "id_usuario", $_POST["btnContinuarEditar"]);
+
+            if (is_string($error_usuario)) {
+                mysqli_close($conexion);
+                die(pag_error("Práctica 1º CRUD", "Nuevo Usuario", $error_usuario));
+            }
+        }
+        if (!$error_email) {
+            $error_email = repetido($conexion, "usuarios", "email", $_POST["email"], "id_usuario", $_POST["btnContinuarEditar"]);
+
+            if (is_string($error_email)) {
+                mysqli_close($conexion);
+                die(pag_error("Práctica 1º CRUD", "Nuevo Usuario", $error_email));
+            }
+        }
+    }
+
+
+    $error_form_editar = $error_nombre || $error_usuario || $error_email;
+    if (!$error_form_editar) {
+
+        if ($_POST["clave"] == "")
+            $consulta = "update usuarios set nombre='" . $_POST["nombre"] . "', usuario='" . $_POST["usuario"] . "', email='" . $_POST["email"] . "' where id_usuario='" . $_POST["btnContinuarEditar"] . "'";
+        else
+            $consulta = "update usuarios set nombre='" . $_POST["nombre"] . "', usuario='" . $_POST["usuario"] . "', clave='" . md5($_POST["clave"]) . "', email='" . $_POST["email"] . "' where id_usuario='" . $_POST["btnContinuarEditar"] . "'";
+        try {
+            mysqli_query($conexion, $consulta);
+            $mensaje_accion = "Usuario editado con Éxito";
+        } catch (Exception $e) {
+            $mensaje = "Imposible realizar la consulta. Error Nº " . mysqli_errno($conexion) . " : " . mysqli_connect_error($conexion);
+            mysqli_close($conexion);
+            die(pag_error("Práctica 1º CRUD", "Listado de los usuarios", $mensaje));
+        }
+    }
+}
+
+if (isset($_POST["btnContinuarBorrar"])) {
+    try {
+        $conexion = mysqli_connect(SERVIDOR_BD, USUARIO_BD, CLAVE_BD, NOMBRE_BD);
+        mysqli_set_charset($conexion, "utf8");
+    } catch (Exception $e) {
+        die(pag_error("Práctica 1º CRUD", "Listado de los usuarios", "Imposible conectar. Error Nº " . mysqli_connect_errno() . " : " . mysqli_connect_error()));
+    }
+
+    $consulta = "delete from usuarios where id_usuario='" . $_POST["btnContinuarBorrar"] . "'";
+    try {
+        $resultado = mysqli_query($conexion, $consulta);
+        $mensaje_accion = "Usuario borrado con Éxito";
+    } catch (Exception $e) {
+        $mensaje = "Imposible realizar la consulta. Error Nº " . mysqli_errno($conexion) . " : " . mysqli_connect_error($conexion);
+        mysqli_close($conexion);
+        die(pag_error("Práctica 1º CRUD", "Listado de los usuarios", $mensaje));
+    }
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
-    <title>Ejercicio 1</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <title>Práctica 1º CRUD</title>
     <style>
         table,
         th,
@@ -15,64 +91,70 @@ require "src/bd_config.php";
         }
 
         table {
-            width: 80%;
-            margin: 0 auto;
-            border-collapse: collapse;
+            border-collapse: collapse
         }
 
         td img {
-            height: 75px;
+            height: 75px
         }
 
-        .centrado {
+        .txt_centrado {
             text-align: center;
         }
-        .centrar{
+
+        .centrar {
             width: 80%;
-            margin: .5em auto;
+            margin: 1em auto;
+        }
+
+        .enlace {
+            border: none;
+            background: none;
+            text-decoration: underline;
+            color: blue;
+            cursor: pointer
         }
     </style>
 </head>
 
 <body>
-    <h1>Listado de los usuarios</h1>
+    <h1 class='txt_centrado'>Listado de los usuarios</h1>
     <?php
-    try {
-        $conexion = mysqli_connect(SERVIDOR_BD, USUARIO_BD, CLAVE_BD, NOMBRE_BD);
-        mysqli_set_charset($conexion, "utf8");
-    } catch (Exception $e) {
-        die("<p>Imposible conectar. Error nº: " . mysqli_connect_errno() . ":" . mysqli_connect_error() . " </p>");
+    if (!isset($conexion)) {
+        try {
+            $conexion = mysqli_connect(SERVIDOR_BD, USUARIO_BD, CLAVE_BD, NOMBRE_BD);
+            mysqli_set_charset($conexion, "utf8");
+        } catch (Exception $e) {
+            die("<p>Imposible conectar. Error Nº " . mysqli_connect_errno() . " : " . mysqli_connect_error() . "</p>");
+        }
     }
 
-    $consulta = "select * from usuarios";
     try {
+        require "vistas/vista_tabla_principal.php";
 
-        $resultado = mysqli_query($conexion, $consulta);
-        echo "<table class='centrado centrar'>";
-        echo "<tr><th>Nombre de usuario</th><th>Borrar</th><th>Editar</th></tr>";
-        while ($tupla = mysqli_fetch_assoc($resultado)) {
-            echo "<tr>";
-            echo "<td>" . $tupla["nombre"] . "</td>";
-            echo "<td><img src='img/borrar.png' alt='Borrar usuario'/></td>";
-            echo "<td><img src='img/editar.png' alt='Editar usuario'/></td>";
-            echo "</tr>";
+
+        if (isset($mensaje_accion))
+            echo "<p class='centrar'>" . $mensaje_accion . "</p>";
+
+
+        if (isset($_POST["btnListar"])) {
+            require "vistas/vista_listar.php";
+        } elseif (isset($_POST["btnBorrar"])) {
+            require "vistas/vista_borrar.php";
+        } elseif (isset($_POST["btnEditar"]) || (isset($_POST["btnContinuarEditar"]) && $error_form_editar)) {
+            require "vistas/vista_editar.php";
+        } else {
+            require "vistas/vista_boton_nuevo.php";
         }
-        echo "</table>";
 
-        mysqli_free_result($resultado); //Se debe de utilizar siempre, libera espacio
         mysqli_close($conexion);
-
-        echo "<form class='centrar' action='usuario_nuevo.php' method='post'>";
-        echo "<button type='submit' name='btnNuevo'>Nuevo Usuario</button>";
-        echo "</form>";
-
     } catch (Exception $e) {
-        $mensaje = "<p>Imposible conectar. Error nº: " . mysqli_connect_errno() . ":" . mysqli_connect_error() . " </p>";
+        $mensaje = "<p>Imposible realizar la consulta. Error Nº " . mysqli_errno($conexion) . " : " . mysqli_error($conexion) . "</p>";
         mysqli_close($conexion);
         die($mensaje);
     }
+
     ?>
-    
 </body>
 
 </html>
