@@ -86,7 +86,9 @@ if (isset($_POST["btnContinuar"])) {
     <form action="usuario_nuevo.php" method="post">
         <p>
             <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" value="<?php if (isset($_POST["nombre"])) echo $_POST["nombre"]; ?>" maxlength="30" />
+            <input type="text" name="nombre" id="nombre"
+                value="<?php if (isset($_POST["nombre"]))
+                echo $_POST["nombre"]; ?>" maxlength="30" />
             <?php
             if (isset($_POST["nombre"]) && $error_nombre)
                 echo "<span class='error'> Campo vacío </span>";
@@ -94,7 +96,9 @@ if (isset($_POST["btnContinuar"])) {
         </p>
         <p>
             <label for="usuario">Usuario:</label>
-            <input type="text" name="usuario" id="usuario" value="<?php if (isset($_POST["usuario"])) echo $_POST["usuario"]; ?>" maxlength="20" />
+            <input type="text" name="usuario" id="usuario"
+                value="<?php if (isset($_POST["usuario"]))
+                echo $_POST["usuario"]; ?>" maxlength="20" />
             <?php
             if (isset($_POST["usuario"]) && $error_usuario)
                 if ($_POST["usuario"] == "")
@@ -113,7 +117,9 @@ if (isset($_POST["btnContinuar"])) {
         </p>
         <p>
             <label for="email">E-mail:</label>
-            <input type="text" name="email" id="email" value="<?php if (isset($_POST["email"])) echo $_POST["email"]; ?>" maxlength="50" />
+            <input type="text" name="email" id="email"
+                value="<?php if (isset($_POST["email"]))
+                echo $_POST["email"]; ?>" maxlength="50" />
             <?php
             if (isset($_POST["email"]) && $error_email) {
                 if ($_POST["email"] == "")

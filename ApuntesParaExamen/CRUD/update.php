@@ -150,7 +150,9 @@ if (isset($_POST['guardar'])) {
 <body>
     <div class="centrar">
         <header>
-            <h1>Editando usuario <?php echo $id . PHP_EOL; ?></h1>
+            <h1>Editando usuario
+                <?php echo $id . PHP_EOL; ?>
+            </h1>
         </header>
         <main>
             <?php
@@ -160,9 +162,9 @@ if (isset($_POST['guardar'])) {
             ?>
             <form action="update.php" method="post" class="centrar">
 
-            <!--Nombre-->
+                <!--Nombre-->
                 <?php if ($error_nombre) { ?>
-                    <span style="color:red;font-style: italic;">El nombre debe tener al menos 3 caracteres.</span>
+                <span style="color:red;font-style: italic;">El nombre debe tener al menos 3 caracteres.</span>
                 <?php } ?>
                 <div class="input">
                     <label for="nombre">Nombre</label>
@@ -171,7 +173,7 @@ if (isset($_POST['guardar'])) {
 
                 <!--Email-->
                 <?php if ($error_email) { ?>
-                    <span style="color:red;font-style: italic;">El email no es válido.</span>
+                <span style="color:red;font-style: italic;">El email no es válido.</span>
                 <?php } ?>
                 <div class="input">
                     <label for="email">Email</label>
@@ -180,7 +182,7 @@ if (isset($_POST['guardar'])) {
 
                 <!--Usuario-->
                 <?php if ($error_usuario) { ?>
-                    <span style="color:red;font-style: italic;">El usuario ya existe o no es válido.</span>
+                <span style="color:red;font-style: italic;">El usuario ya existe o no es válido.</span>
                 <?php } ?>
                 <div class="input">
                     <label for="usuario">Usuario</label>
@@ -189,7 +191,7 @@ if (isset($_POST['guardar'])) {
 
                 <!--Clave-->
                 <?php if ($error_clave) { ?>
-                    <span style="color:red;font-style: italic;">La clave debe tener al menos 8 caracteres.</span>
+                <span style="color:red;font-style: italic;">La clave debe tener al menos 8 caracteres.</span>
                 <?php } ?>
                 <div class="input">
                     <label for="clave">Clave</label>
