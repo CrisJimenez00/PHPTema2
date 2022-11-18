@@ -26,7 +26,7 @@ if (isset($_POST["btnContinuarEditar"])) {
             border-collapse: collapse
         }
 
-        td img {
+        img {
             height: 75px
         }
 
@@ -60,6 +60,46 @@ if (isset($_POST["btnContinuarEditar"])) {
         die("<p>Imposible conectar. Error Nº " . mysqli_connect_errno() . " : " . mysqli_connect_error() . "</p>");
     }
 
+    if (isset($_POST["btnListar"])) {
+        $consulta = "select * from usuarios where id_usuario='" . $_POST["btnListar"] . "'";
+        $resultado = mysqli_query($conexion, $consulta);
+        if (mysqli_num_rows($resultado) > 0) {
+            $datos_usuario = mysqli_fetch_assoc($resultado);
+            echo "<div class='centrar'>";
+            echo "<h2>Datos del usuario</h2>";
+            echo "<p>Id Usuario: " . $datos_usuario["id_usuario"] . "</p>";
+            echo "<p>Usuario: " . $datos_usuario["usuario"] . "</p>";
+            echo "<p>Clave: " . $datos_usuario["clave"] . "</p>";
+            echo "<p>Nombre: " . $datos_usuario["nombre"] . "</p>";
+            echo "<p>DNI: " . $datos_usuario["dni"] . "</p>";
+            echo "<p>Sexo: " . $datos_usuario["sexo"] . "</p>";
+            echo "<p>Foto: <img src='img/" . $datos_usuario["foto"] . "' alt='Foto de perfil' title='foto de perfil'/></p>";
+            echo "";
+        } else {
+            echo "El usuario está vacio";
+        }
+        echo " <form action='index.php' method='post'><p><button type='submit'>Volver</button></p></form></div>";
+        mysqli_free_result($resultado);
+    }
+    $consulta = "delete from usuarios where id_usuario='" . $_POST["btnContinuarBorrar"] . "';";
+    $resultado = mysqli_query($conexion, $consulta);
+
+    if (isset($_POST["btnBorrar"])) {
+
+        //Esto es para un mensaje de confirmación
+        echo "<div class='centrar'>";
+        echo "<h3>Borrado del usuario " . $_POST["btnListar"] . "</h3>";
+        echo "<p>¿Estas seguro?</p>";
+        echo "<form method='post' action='index.php'>";
+        echo "<p><button type='submit'>Volver</button> <button type='submit' value='" . $_POST["btnContinuarBorrar"] . "' name='btnContinuarBorrar'>Continuar</button></p>";
+        echo "</form>";
+        echo "</div>";
+    }
+
+
+    if (isset($_POST["btnEditar"])) {
+    }
+
     //Para controlar el error del select
     try {
         $consulta = "select * from usuarios";
@@ -73,19 +113,18 @@ if (isset($_POST["btnContinuarEditar"])) {
         echo "<tr><th>#</th><th>Foto</th><th>Nombre</th><th>Usuario+</th></tr>";
 
         //Esto es para que todo se vea como celdas de una tabla
-        while($tupla=mysqli_fetch_assoc($resultado)){
+        while ($tupla = mysqli_fetch_assoc($resultado)) {
             echo "<tr>";
-            echo "<td>".$tupla["id_usuario"]."</td>";
-            echo "<td><img src='img/".$tupla["foto"]."' alt='Foto de perfil' title='foto de perfil'/></td>";
-            echo "<td>".$tupla["nombre"]."</td>";
-            echo "<td>Borrar - Editar</td>";
+            echo "<td>" . $tupla["id_usuario"] . "</td>";
+            echo "<td><img src='img/" . $tupla["foto"] . "' alt='Foto de perfil' title='foto de perfil'/></td>";
+            echo "<td><form method='post' action='index.php'><button type='submit' value='" . $tupla["id_usuario"] . "' name='btnListar' class='enlace'>" . $tupla["nombre"] . "</button></form></td>";
+            echo "<td><form method='post' action='index.php'><button type='submit' value='" . $tupla["id_usuario"] . "' name='btnBorrar' class='enlace'>Borrar</button></form> - <form method='post' action='index.php'><button type='submit' value='" . $tupla["id_usuario"] . "' name='btnEditar' class='enlace'>Editar</button></form></td>";
             echo "</tr>";
         }
 
         echo "</table>";
         mysqli_free_result($resultado);
         mysqli_close($conexion);
-
     } catch (Exception $e) {
         die("<p>Imposible realizar la consulta. Error Nº " . mysqli_errno($conexion) . " : " . mysqli_error($conexion) . "</p>");
     }
